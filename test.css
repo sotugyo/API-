@@ -1,0 +1,26 @@
+/* 地図のサイズを指定 */
+#map {
+  height: 100vh; /* 画面全体 */
+}
+
+/* タイトルの装飾（おまけ） */
+h2 {
+  text-align: center;
+  font-family: sans-serif;
+  margin: 10px 0;
+}
+
+
+//ここからOpenRouteSurviseを利用して地図に表示されるかどうかを試す
+
+#map {
+  width: 100%;      /* 横幅いっぱい */
+  height: 600px;    /* 高さを確保 */
+}
+
+#weather {
+  font-size: 16px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+}
