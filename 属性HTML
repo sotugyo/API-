@@ -67,10 +67,10 @@
         <select id="interests" name="interests" required>
           <option value="">選択してください</option>
           <option value="temples">歴史・寺社・文化</option>
-          <option value="sea">自然・景観</option>
+          <option value="nature">自然・景観</option>
           <option value="food">グルメ・カフェ</option>
-          <option value="cafe">お土産・雑貨</option>
-          <option value="shopping">体験・アクテビティ</option>
+          <option value="souvenir">お土産・雑貨</option>
+          <option value="activity">体験・アクテビティ</option>
         </select>
       </div>
 
