@@ -4,16 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>鎌倉パーソナル観光ルート｜属性選択</title>
+  <style>
+    #language-select { display: none; margin-bottom: 16px; }
+    #language-select button { margin-right: 8px; }
+  </style>
 </head>
 <body>
   <main>
-    <h1>鎌倉パーソナル観光ルートサイト</h1>
-    <p>あなたに合った観光ルートを提案します！</p>
+    <!-- 設定ボタン -->
+    <div>
+      <button type="button" onclick="showLanguageSelect()">設定</button>
+    </div>
+
+    <!-- 言語切替ボタン（初期非表示）-->
+    <div id="language-select">
+      <button type="button" onclick="switchLang('ja')">日本語</button>
+      <button type="button" onclick="switchLang('en')">English</button>
+      <button type="button" onclick="switchLang('cn')">中文</button>
+    </div>
+
+    <h1 id="title">鎌倉パーソナル観光ルートサイト</h1>
+    <p id="description">あなたに合った観光ルートを提案します！</p>
 
     <form>
       <!-- 国籍 -->
       <div class="field">
-        <label for="nationality">国籍</label>
+        <label for="nationality" id="label-nationality">国籍</label>
         <select id="nationality" name="nationality" required>
           <option value="">選択してください</option>
           <option value="jp">日本</option>
@@ -25,7 +41,7 @@
 
       <!-- 年代 -->
       <div class="field">
-        <label for="age">年代</label>
+        <label for="age" id="label-age">年代</label>
         <select id="age" name="age" required>
           <option value="">選択してください</option>
           <option value="teens">10代以下</option>
@@ -38,7 +54,7 @@
 
       <!-- 同行者 -->
       <div class="field">
-        <label for="companions">同行者</label>
+        <label for="companions" id="label-companions">同行者</label>
         <select id="companions" name="companions" required>
           <option value="">選択してください</option>
           <option value="solo">ひとり旅</option>
@@ -51,7 +67,7 @@
 
       <!-- 滞在時間 -->
       <div class="field">
-        <label for="stay">滞在時間</label>
+        <label for="stay" id="label-stay">滞在時間</label>
         <select id="stay" name="stay" required>
           <option value="">選択してください</option>
           <option value="daytrip">日帰り</option>
@@ -63,7 +79,7 @@
 
       <!-- 興味のあるジャンル -->
       <div class="field">
-        <label for="interests">興味のあるジャンル</label>
+        <label for="interests" id="label-interests">興味のあるジャンル</label>
         <select id="interests" name="interests" required>
           <option value="">選択してください</option>
           <option value="temples">歴史・寺社・文化</option>
@@ -76,9 +92,95 @@
 
       <!-- 送信ボタン -->
       <div class="actions">
-        <button type="submit">完了</button>
+        <button type="submit" id="submit-btn">完了</button>
       </div>
     </form>
   </main>
+
+  <script>
+    // 言語設定ボタン表示
+    function showLanguageSelect() {
+      document.getElementById('language-select').style.display = 'block';
+    }
+
+    // 多言語テキスト辞書
+    const texts = {
+      ja: {
+        title: "鎌倉パーソナル観光ルートサイト",
+        description: "あなたに合った観光ルートを提案します！",
+        nationality: "国籍",
+        nationalityOptions: ["選択してください","日本","アメリカ","中国","その他"],
+        age: "年代",
+        ageOptions: ["選択してください","10代以下","20代","30代","40代","50代以上"],
+        companions: "同行者",
+        companionsOptions: ["選択してください","ひとり旅","カップル","家族","友人","グループ"],
+        stay: "滞在時間",
+        stayOptions: ["選択してください","日帰り","1泊2日","2泊3日","3泊以上"],
+        interests: "興味のあるジャンル",
+        interestsOptions: ["選択してください","歴史・寺社・文化","自然・景観","グルメ・カフェ","お土産・雑貨","体験・アクテビティ"],
+        submit: "完了"
+      },
+      en: {
+        title: "Kamakura Personal Tour Routes",
+        description: "We suggest a tour route that fits you!",
+        nationality: "Nationality",
+        nationalityOptions: ["Please select","Japan","USA","China","Other"],
+        age: "Age",
+        ageOptions: ["Please select","Teens","20s","30s","40s","50s+"],
+        companions: "Companions",
+        companionsOptions: ["Please select","Solo","Couple","Family","Friends","Group"],
+        stay: "Stay Duration",
+        stayOptions: ["Please select","Day trip","1 night 2 days","2 nights 3 days","3 nights+"],
+        interests: "Interests",
+        interestsOptions: ["Please select","History/Temples/Culture","Nature/Scenery","Food/Cafe","Souvenir/Goods","Experiences/Activities"],
+        submit: "Submit"
+      },
+      cn: {
+        title: "镰仓个人旅游路线网站",
+        description: "为您推荐适合的旅游路线！",
+        nationality: "国籍",
+        nationalityOptions: ["请选择","日本","美国","中国","其他"],
+        age: "年龄",
+        ageOptions: ["请选择","10岁以下","20多岁","30多岁","40多岁","50岁以上"],
+        companions: "同行者",
+        companionsOptions: ["请选择","独自旅行","情侣","家庭","朋友","团体"],
+        stay: "停留时间",
+        stayOptions: ["请选择","当天往返","1晚2天","2晚3天","3晚以上"],
+        interests: "兴趣类别",
+        interestsOptions: ["请选择","历史/寺庙/文化","自然/景观","美食/咖啡","纪念品/杂货","体验/活动"],
+        submit: "完成"
+      }
+    };
+
+    // 言語切替関数
+    function switchLang(lang) {
+      const t = texts[lang];
+      document.getElementById("title").textContent = t.title;
+      document.getElementById("description").textContent = t.description;
+      document.getElementById("label-nationality").textContent = t.nationality;
+      document.getElementById("label-age").textContent = t.age;
+      document.getElementById("label-companions").textContent = t.companions;
+      document.getElementById("label-stay").textContent = t.stay;
+      document.getElementById("label-interests").textContent = t.interests;
+      document.getElementById("submit-btn").textContent = t.submit;
+
+      const setOptions = (id, options) => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = "";
+        options.forEach((opt, i) => {
+          const option = document.createElement("option");
+          option.value = sel.options[i]?.value || (i===0?"":opt.toLowerCase());
+          option.textContent = opt;
+          sel.appendChild(option);
+        });
+      };
+
+      setOptions("nationality", t.nationalityOptions);
+      setOptions("age", t.ageOptions);
+      setOptions("companions", t.companionsOptions);
+      setOptions("stay", t.stayOptions);
+      setOptions("interests", t.interestsOptions);
+    }
+  </script>
 </body>
 </html>
