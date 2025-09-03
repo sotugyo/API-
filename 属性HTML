@@ -154,6 +154,10 @@
 
     // 言語切替関数
     function switchLang(lang) {
+      // 🔹 ここで選択した言語を保存
+      localStorage.setItem("siteLanguage", lang);
+
+
       const t = texts[lang];
       document.getElementById("title").textContent = t.title;
       document.getElementById("description").textContent = t.description;
