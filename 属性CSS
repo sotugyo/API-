@@ -12,16 +12,20 @@ form {
   font-family: "Yu Gothic", "Hiragino Sans", sans-serif;
 }
 
-/* タイトル */
-form h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 26px;
-  color: #0066cc; /* 青めの色でアクセント */
-  font-weight: bold;
-  border-bottom: 2px solid #0066cc;
-  display: inline-block;
-  padding-bottom: 6px;
+body {
+  text-align: center; /* body直下の要素を中央に */
+}
+
+/* ページ全体の大きなタイトル */
+#title {
+  text-align: center;       /* 中央揃え */
+  margin: 30px 0 40px;      /* 上下の余白を広めに */
+  font-size: 32px;          /* 大きめの文字 */
+  color: #0066cc;           /* 明るめの青 */
+  font-weight: bold;        /* 太字 */
+  border-bottom: 3px solid #0066cc; /* 下線を青でアクセント */
+  display: inline-block;    /* 下線が文字の幅に合わせて出る */
+  padding-bottom: 8px;      /* 下線と文字の間隔 */
 }
 
 /* ラベル */
@@ -79,5 +83,3 @@ form input[type="submit"] {
   border: none;
   border-radius: 8px;
   font-size: 17p
-}
-
