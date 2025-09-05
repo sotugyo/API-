@@ -83,3 +83,48 @@ form input[type="submit"] {
   border: none;
   border-radius: 8px;
   font-size: 17p
+}
+
+/* 設定ボタンのdivごと固定 */
+body > main > div:first-child {
+  position: fixed; /* 画面に固定 */
+  top: 16px;
+  right: 16px;
+  text-align: right; /* div内のボタンを右寄せ */
+  z-index: 1000;
+}
+
+/* 設定ボタンを丸くして絵文字に */
+body > main > div:first-child > button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #4da6ff;
+  border: none;
+  cursor: pointer;
+  text-indent: -9999px;
+  position: relative;
+}
+
+/* 擬似要素で絵文字表示 */
+body > main > div:first-child > button::before {
+  content: "⚙️";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+}
+
+/* 言語切替ボタン */
+#language-select {
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  text-align: right;
+  z-index: 1000;
+}
+
+#language-select button {
+  margin-left: 8px;
+}
