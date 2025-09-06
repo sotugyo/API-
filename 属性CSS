@@ -94,27 +94,29 @@ body > main > div:first-child {
   z-index: 1000;
 }
 
-/* 設定ボタンを丸くして絵文字に */
+/* 設定ボタンを絵文字に（元の文字はフォントサイズ0で消す） */
 body > main > div:first-child > button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #4da6ff;
-  border: none;
-  cursor: pointer;
-  text-indent: -9999px;
-  position: relative;
+  background: none;  /* 背景なし */
+  border: none;      /* 枠なし */
+  cursor: pointer;   /* ポインタに変化 */
+  padding: 0;        /* 余白なし */
+  line-height: 1;    /* 行間を詰める */
+  font-size: 0;      /* ← これで「設定」の文字を消す */
+  position: relative; /* 擬似要素配置の基準に */
 }
 
-/* 擬似要素で絵文字表示 */
+/* 擬似要素で歯車アイコンを表示 */
 body > main > div:first-child > button::before {
-  content: "⚙️";
+  content: "⚙️";  /* 歯車アイコン */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 24px;
+  font-size: 28px;  /* 擬似要素だけ大きく */
+  line-height: 1;
 }
+
+
 
 /* 言語切替ボタン */
 #language-select {
