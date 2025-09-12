@@ -1,0 +1,80 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // スプレッドシートURL（gviz形式）
+  const sheetURL = "https://docs.google.com/spreadsheets/d/1w5waa7_xUlB-_wt0TfLhDw48ehg86yl6/gviz/tq?sheet=有名&headers=1&tq=";
+
+  // データ取得
+  fetch(sheetURL)
+    .then(res => res.text())
+    .then(data => {
+      const json = JSON.parse(data.substr(47).slice(0, -2)); // gviz形式の整形
+      const rows = json.table.rows;
+
+      const spots = rows.map(row => ({
+        genre: row.c[0]?.v,         // スプレッドシートのジャンル（例: History-Culture）
+        name: row.c[1]?.v,
+        img: `https://drive.google.com/uc?export=view&id=${row.c[2]?.v}`
+      }));
+
+      displaySpots(spots, 1); // ステップ1
+      displaySpots(spots, 2); // ステップ2
+    });
+
+  // スポットをHTMLに表示
+  function displaySpots(spots, step) {
+    spots.forEach(spot => {
+      const containerId = `step${step}-cat-${spot.genre}`; // ジャンル名をそのままIDに
+      const container = document.getElementById(containerId);
+
+      if (!container) {
+        console.warn(`Container not found: ${containerId}`);
+        return; // 存在しなければスキップ
+      }
+
+      const div = document.createElement('div');
+      div.className = 'spot-item';
+      div.style.cursor = 'pointer';
+      div.style.display = 'inline-block';
+      div.style.margin = '5px';
+      div.style.border = '2px solid transparent';
+      div.innerHTML = `
+        <img src="${spot.img}" alt="${spot.name}" width="100"><br>
+        <p>${spot.name}</p>
+      `;
+
+      div.addEventListener('click', () => selectSpot(spot, step, div));
+      container.appendChild(div);
+    });
+  }
+
+  // スポット選択処理
+  function selectSpot(spot, step, div) {
+    if (step === 1) {
+      localStorage.setItem('step1Spot', JSON.stringify(spot));
+      highlightSelected('step1', div);
+    } else {
+      localStorage.setItem('step2Spot', JSON.stringify(spot));
+      highlightSelected('step2', div);
+    }
+  }
+
+  // 選択中の赤枠表示
+  function highlightSelected(step, selectedDiv) {
+    document.querySelectorAll(`#step${step} .spot-item`).forEach(div => {
+      div.style.border = div === selectedDiv ? '2px solid red' : '2px solid transparent';
+    });
+  }
+
+  // 次へボタン処理
+  const nextBtn = document.getElementById('next-step');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const step1 = localStorage.getItem('step1Spot');
+      const step2 = localStorage.getItem('step2Spot');
+      if (!step1 || !step2) {
+        alert('両方のスポットを選んでください');
+        return;
+      }
+      window.location.href = 'spot.html';
+    });
+  }
+});
