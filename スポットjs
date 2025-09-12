@@ -1,33 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // スプレッドシートURL（gviz形式）
   const sheetURL = "https://docs.google.com/spreadsheets/d/1w5waa7_xUlB-_wt0TfLhDw48ehg86yl6/gviz/tq?sheet=有名&headers=1&tq=";
 
-  // データ取得
   fetch(sheetURL)
     .then(res => res.text())
     .then(data => {
-      const json = JSON.parse(data.substr(47).slice(0, -2)); // gviz形式の整形
+      const json = JSON.parse(data.substr(47).slice(0, -2));
       const rows = json.table.rows;
 
       const spots = rows.map(row => ({
-        genre: row.c[0]?.v,         // スプレッドシートのジャンル（例: History-Culture）
+        genre: row.c[0]?.v,  // スプレッドシートのジャンル
         name: row.c[1]?.v,
         img: `https://drive.google.com/uc?export=view&id=${row.c[2]?.v}`
       }));
 
-      displaySpots(spots, 1); // ステップ1
-      displaySpots(spots, 2); // ステップ2
+      displaySpots(spots, 1);
+      displaySpots(spots, 2);
     });
 
-  // スポットをHTMLに表示
   function displaySpots(spots, step) {
     spots.forEach(spot => {
-      const containerId = `step${step}-cat-${spot.genre}`; // ジャンル名をそのままIDに
+      const containerId = `step${step}-cat-${spot.genre}`;
       const container = document.getElementById(containerId);
 
       if (!container) {
         console.warn(`Container not found: ${containerId}`);
-        return; // 存在しなければスキップ
+        return;
       }
 
       const div = document.createElement('div');
@@ -37,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       div.style.margin = '5px';
       div.style.border = '2px solid transparent';
       div.innerHTML = `
-        <img src="${spot.img}" alt="${spot.name}" width="100"><br>
+        <img src="${spot.img}" alt="${spot.name}" width="100" onerror="this.src='';this.alt='画像なし'"><br>
         <p>${spot.name}</p>
       `;
 
@@ -46,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // スポット選択処理
   function selectSpot(spot, step, div) {
     if (step === 1) {
       localStorage.setItem('step1Spot', JSON.stringify(spot));
@@ -57,14 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 選択中の赤枠表示
   function highlightSelected(step, selectedDiv) {
     document.querySelectorAll(`#step${step} .spot-item`).forEach(div => {
       div.style.border = div === selectedDiv ? '2px solid red' : '2px solid transparent';
     });
   }
 
-  // 次へボタン処理
   const nextBtn = document.getElementById('next-step');
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
