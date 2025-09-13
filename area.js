@@ -89,12 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 選択中のスポットに枠をつける
-  function highlightSelected(step, selectedDiv) {
-    document.querySelectorAll(`#${step} .spot-item`).forEach(div => {
-      div.style.border = div === selectedDiv ? '2px solid red' : '2px solid transparent';
-    });
-  }
+// スポット選択処理（クラス付け替え方式）
+function highlightSelected(step, selectedDiv) {
+  document.querySelectorAll(`#${step} .spot-item`).forEach(div => {
+    div.classList.remove('selected'); // まず全て外す
+  });
+  selectedDiv.classList.add('selected'); // 選択した要素に追加
+}
 
   // 次のページへ
   const nextBtn = document.getElementById('next-step');
