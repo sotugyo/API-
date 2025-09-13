@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
           en: row.c[2]?.v,
           cn: row.c[3]?.v
         },
-        img: row.c[4]?.v     // ここはもうImgurの直接URL
+        img: row.c[4]?.v     // ここはImgurの直接URL
       }));
 
       displaySpots(spots, 1);
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       langButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           currentLang = btn.dataset.lang; // ja, en, cn
-          // 画面の固定文言切替
+          // 固定文言を切替
           document.querySelectorAll('.lang-ja, .lang-en, .lang-cn').forEach(el => {
             el.style.display = 'none';
           });
@@ -42,13 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // スポットを表示
   function displaySpots(spots, step) {
-    spots.forEach(spot => {
+    spots.forEach((spot, i) => {
       const containerId = `step${step}-cat-${spot.genre}`;
       const container = document.getElementById(containerId);
       if (!container) return;
 
       const div = document.createElement('div');
       div.className = 'spot-item';
+      div.dataset.index = i; // ← どのスポットか記録
       div.style.cursor = 'pointer';
       div.style.display = 'inline-block';
       div.style.margin = '5px';
@@ -66,11 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 言語切替時にスポット名を更新
   function updateSpotNames(spots) {
-    document.querySelectorAll('.spot-item').forEach((div, idx) => {
-      const spot = spots[idx];
-      if (!spot) return;
+    document.querySelectorAll('.spot-item').forEach(div => {
+      const index = div.dataset.index;
+      if (index === undefined) return;
+      const spot = spots[index];
       const p = div.querySelector('.spot-name');
-      if (p) p.textContent = spot.name[currentLang] || spot.name.ja;
+      if (p && spot) {
+        p.textContent = spot.name[currentLang] || spot.name.ja;
+      }
     });
   }
 
