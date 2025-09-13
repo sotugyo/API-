@@ -82,8 +82,8 @@ p {
 
 /* 選択中のスポット */
 .spot-item.selected {
-  border-color: #ff6666;
-  box-shadow: 0 0 8px rgba(255,102,102,0.6);
+  transform: scale(1.05);    /* 少し拡大 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 軽い影 */
 }
 
 /* 次へボタン */
