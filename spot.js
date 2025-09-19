@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         name: { ja: row.c[1]?.v || '', en: row.c[2]?.v || '', cn: row.c[3]?.v || '' },
         img: row.c[4]?.v || '',
         description: { ja: row.c[5]?.v || '', en: row.c[6]?.v || '', cn: row.c[7]?.v || '' },
-        lat: parseFloat(row.c[8]?.v || 0),
-        lng: parseFloat(row.c[9]?.v || 0),
+        lat: lat,
+        lng: lng,
         coolLevel: row.c[9]?.v || '',        // 避暑度
         openingHours: row.c[10]?.v || '',    // 営業時間
         website: row.c[14]?.v || '',         // ホームページ
