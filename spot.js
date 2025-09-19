@@ -55,6 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const rows = json.table.rows;
 
       const spots = rows.map(row => ({
+ 
+      // 緯度・経度をカンマ区切りで分割して数値化
+     const latLngStr = row.c[8]?.v || "0,0";
+     const [lat, lng] = latLngStr.split(',').map(s => parseFloat(s.trim()));
+     
+     returen{
         genre: row.c[0]?.v || '',
         name: { ja: row.c[1]?.v || '', en: row.c[2]?.v || '', cn: row.c[3]?.v || '' },
         img: row.c[4]?.v || '',
@@ -65,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openingHours: row.c[10]?.v || '',    // 営業時間
         website: row.c[14]?.v || '',         // ホームページ
         reservation: row.c[15]?.v || ''      // 予約リンク
+     };
       }));
 
       const filteredSpots = spots.filter(s => {
