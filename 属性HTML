@@ -1,10 +1,11 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
-  <link rel="stylesheet" href="属性.css">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>鎌倉パーソナル観光ルート｜属性選択</title>
+  <link rel="stylesheet" href="属性.css">
   <style>
     #language-select { display: none; margin-bottom: 16px; }
     #language-select button { margin-right: 8px; }
@@ -17,7 +18,7 @@
       <button type="button" onclick="showLanguageSelect()">設定</button>
     </div>
 
-    <!-- 言語切替ボタン（初期非表示）-->
+    <!-- 言語切替ボタン -->
     <div id="language-select">
       <button type="button" onclick="switchLang('ja')">日本語</button>
       <button type="button" onclick="switchLang('en')">English</button>
@@ -27,7 +28,7 @@
     <h1 id="title">鎌倉パーソナル観光ルートサイト</h1>
     <p id="description">あなたに合った観光ルートを提案します！</p>
 
-    <form>
+    <form id="attributeForm">
       <!-- 国籍 -->
       <div class="field">
         <label for="nationality" id="label-nationality">国籍</label>
@@ -78,16 +79,16 @@
         </select>
       </div>
 
-      <!-- 興味のあるジャンル -->
+      <!-- 興味のあるジャンル（スプレッドシート文字列に対応） -->
       <div class="field">
         <label for="interests" id="label-interests">興味のあるジャンル</label>
         <select id="interests" name="interests" required>
           <option value="">選択してください</option>
-          <option value="temples">歴史・寺社・文化</option>
-          <option value="nature">自然・景観</option>
-          <option value="food">グルメ・カフェ</option>
-          <option value="souvenir">お土産・雑貨</option>
-          <option value="activity">体験・アクテビティ</option>
+          <option value="History">歴史・寺社・文化</option>
+          <option value="Nature">自然・景観</option>
+          <option value="Food">グルメ・カフェ</option>
+          <option value="Shopping">お土産・雑貨</option>
+          <option value="Activity">体験・アクティビティ</option>
         </select>
       </div>
 
@@ -98,6 +99,7 @@
     </form>
   </main>
 
+  <!-- 言語切替スクリプト -->
   <script>
     // 言語設定ボタン表示
     function showLanguageSelect() {
@@ -118,7 +120,7 @@
         stay: "滞在時間",
         stayOptions: ["選択してください","日帰り","1泊2日","2泊3日","3泊以上"],
         interests: "興味のあるジャンル",
-        interestsOptions: ["選択してください","歴史・寺社・文化","自然・景観","グルメ・カフェ","お土産・雑貨","体験・アクテビティ"],
+        interestsOptions: ["選択してください","歴史・寺社・文化","自然・景観","グルメ・カフェ","お土産・雑貨","体験・アクティビティ"],
         submit: "完了"
       },
       en: {
@@ -155,11 +157,9 @@
 
     // 言語切替関数
     function switchLang(lang) {
-      // 🔹 ここで選択した言語を保存
       localStorage.setItem("siteLanguage", lang);
-
-
       const t = texts[lang];
+
       document.getElementById("title").textContent = t.title;
       document.getElementById("description").textContent = t.description;
       document.getElementById("label-nationality").textContent = t.nationality;
@@ -174,7 +174,8 @@
         sel.innerHTML = "";
         options.forEach((opt, i) => {
           const option = document.createElement("option");
-          option.value = sel.options[i]?.value || (i===0?"":opt.toLowerCase());
+          // スプレッドシート文字列を value として保持（先頭は空文字）
+          option.value = i === 0 ? "" : opt;
           option.textContent = opt;
           sel.appendChild(option);
         });
@@ -186,9 +187,30 @@
       setOptions("stay", t.stayOptions);
       setOptions("interests", t.interestsOptions);
     }
-  </script>
-　<!-- bodyの最後に追加 -->
-<script src="属性.js"></script>
 
+    // ページ読み込み時に前回選択言語を反映
+    document.addEventListener("DOMContentLoaded", () => {
+      const lang = localStorage.getItem("siteLanguage") || "ja";
+      switchLang(lang);
+
+      // フォーム送信時に localStorage に保存して次ページへ
+      const form = document.getElementById("attributeForm");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const userAttributes = {
+          nationality: document.getElementById("nationality").value,
+          age: document.getElementById("age").value,
+          companions: document.getElementById("companions").value,
+          stay: document.getElementById("stay").value,
+          interests: document.getElementById("interests").value
+        };
+        localStorage.setItem("userAttributes", JSON.stringify(userAttributes));
+        // 次のページへ
+        window.location.href = "spot.html";
+      });
+    });
+  </script>
+
+  <script src="属性.js"></script>
 </body>
 </html>
