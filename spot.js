@@ -2,15 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sheetURL = "https://docs.google.com/spreadsheets/d/1w5waa7_xUlB-_wt0TfLhDw48ehg86yl6/gviz/tq?sheet=穴場&headers=1&tq=";
   const spotContainer = document.getElementById('spotContainer');
   let currentLang = 'ja';
-
-  // 言語切替ボタン
   const langButtons = document.querySelectorAll('#language-switcher button');
-  langButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentLang = btn.dataset.lang;
-      updateSpotNames();
-    });
-  });
 
   const userAttributes = JSON.parse(localStorage.getItem('userAttributes') || '{}');
   const step1Spot = JSON.parse(localStorage.getItem('step1Spot') || 'null');
@@ -24,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     "体験・アクティビティ": "Activity"
   };
   const selectedGenre = genreMap[userAttributes.interests] || userAttributes.interests;
+  const maxDistanceKm = 2;
 
-  // 距離判定用（最短距離2km以内に絞る）
   function getDistance(lat1, lng1, lat2, lng2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -46,8 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return 2 * area / C;
   }
 
-  const maxDistanceKm = 2;
-
   fetch(sheetURL)
     .then(res => res.text())
     .then(data => {
@@ -59,17 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
         name: { ja: row.c[1]?.v || '', en: row.c[2]?.v || '', cn: row.c[3]?.v || '' },
         img: row.c[4]?.v || '',
         description: { ja: row.c[5]?.v || '', en: row.c[6]?.v || '', cn: row.c[7]?.v || '' },
-        lat: parseFloat(row.c[8]?.v || 0),
+        lat: parseFloat(row.c[8]?.v || 0),  // 9列目
         lng: parseFloat(row.c[9]?.v || 0),
-        coolLevel: row.c[9]?.v || '',        // 避暑度
-        openingHours: row.c[10]?.v || '',    // 営業時間
-        website: row.c[14]?.v || '',         // ホームページ
-        reservation: row.c[15]?.v || ''      // 予約リンク
+        coolLevel: row.c[10]?.v || '',
+        openingHours: row.c[11]?.v || '',
+        website: row.c[14]?.v || '',
+        reservation: row.c[15]?.v || ''
       }));
 
       const filteredSpots = spots.filter(s => {
-        const matchGenre = s.genre?.trim().toLowerCase() === selectedGenre.trim().toLowerCase();
-        if (!matchGenre) return false;
+        if (s.genre?.trim().toLowerCase() !== selectedGenre.trim().toLowerCase()) return false;
         if (step1Spot && step2Spot && s.lat && s.lng) {
           const distanceToLine = pointToLineDistance(
             step1Spot.lat, step1Spot.lng,
@@ -94,11 +83,35 @@ document.addEventListener('DOMContentLoaded', () => {
         div.innerHTML = `
           <img src="${spot.img}" alt="${spot.name.ja}" width="100"><br>
           <h3 class="spot-name">${spot.name[currentLang]}</h3>
-          <p>${spot.description[currentLang]}</p>
-          <p><strong>営業時間:</strong> ${spot.openingHours}</p>
-          <p><strong>涼しさ:</strong> ${spot.coolLevel}</p>
-          <p><a href="${spot.website}" target="_blank">公式サイト</a></p>
-          <p><a href="${spot.reservation}" target="_blank">予約リンク</a></p>
+          <p class="spot-desc">${spot.description[currentLang]}</p>
+          <p>
+            <strong>
+              <span class="lang-ja">営業時間</span>
+              <span class="lang-en" style="display:none">Opening Hours</span>
+              <span class="lang-cn" style="display:none">营业时间</span>
+            </strong>: ${spot.openingHours}
+          </p>
+          <p>
+            <strong>
+              <span class="lang-ja">涼しさ</span>
+              <span class="lang-en" style="display:none">Coolness</span>
+              <span class="lang-cn" style="display:none">凉爽度</span>
+            </strong>: ${spot.coolLevel}
+          </p>
+          <p>
+            <a href="${spot.website}" target="_blank">
+              <span class="lang-ja">公式サイト</span>
+              <span class="lang-en" style="display:none">Website</span>
+              <span class="lang-cn" style="display:none">官方网站</span>
+            </a>
+          </p>
+          <p>
+            <a href="${spot.reservation}" target="_blank">
+              <span class="lang-ja">予約リンク</span>
+              <span class="lang-en" style="display:none">Reservation</span>
+              <span class="lang-cn" style="display:none">预约链接</span>
+            </a>
+          </p>
         `;
         div.addEventListener('click', () => selectSpot(spot, div));
         spotContainer.appendChild(div);
@@ -106,10 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function updateSpotNames() {
         document.querySelectorAll('.spot-item').forEach((div, i) => {
-          const p = div.querySelector('.spot-name');
-          if (p && filteredSpots[i]) {
-            p.textContent = filteredSpots[i].name[currentLang];
-          }
+          const spot = filteredSpots[i];
+          if (!spot) return;
+          div.querySelector('.spot-name').textContent = spot.name[currentLang];
+          div.querySelector('.spot-desc').textContent = spot.description[currentLang];
         });
       }
 
@@ -119,6 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('hiddenSpot', JSON.stringify(spot));
       }
 
+      // 言語切替
+      langButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentLang = btn.dataset.lang;
+          document.querySelectorAll('.lang-ja, .lang-en, .lang-cn').forEach(el => el.style.display = 'none');
+          document.querySelectorAll(`.lang-${currentLang}`).forEach(el => el.style.display = '');
+          updateSpotNames();
+        });
+      });
+
+      // 次へボタン
       const nextBtn = document.getElementById('nextBtn');
       if (nextBtn) {
         nextBtn.addEventListener('click', () => {
