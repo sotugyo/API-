@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         description: { ja: row.c[5]?.v || '', en: row.c[6]?.v || '', cn: row.c[7]?.v || '' },
         lat: parseFloat(row.c[8]?.v || 0),  // 9列目
         lng: parseFloat(row.c[9]?.v || 0),
-        coolLevel: row.c[10]?.v || '',
-        openingHours: row.c[11]?.v || '',
+        coolLevel: row.c[9]?.v || '',
+        openingHours: row.c[10]?.v || '',
         website: row.c[14]?.v || '',
         reservation: row.c[15]?.v || ''
       }));
