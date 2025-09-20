@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const spots = rows.map(row => {
         // 緯度経度は5列目（index 4）にまとめられている
-        const latLng = (row.c[4]?.v || '0,0').split(',');
+        const latLng = (row.c[5]?.v || '0,0').split(',');
         const lat = parseFloat(latLng[0].trim());
         const lng = parseFloat(latLng[1].trim());
 
