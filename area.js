@@ -9,38 +9,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const json = JSON.parse(data.substr(47).slice(0, -2));
       const rows = json.table.rows;
 
-      const spots = rows.map(row => ({
-        genre: row.c[0]?.v,
-        name: {
-          ja: row.c[1]?.v,
-          en: row.c[2]?.v,
-          cn: row.c[3]?.v
-        },
-        img: row.c[4]?.v     // ここはImgurの直接URL
-      }));
+      const spots = rows.map(row => {
+        // 緯度経度は5列目（index 4）にまとめられている
+        const latLng = (row.c[4]?.v || '0,0').split(',');
+        const lat = parseFloat(latLng[0].trim());
+        const lng = parseFloat(latLng[1].trim());
+
+        return {
+          genre: row.c[0]?.v,
+          name: { ja: row.c[1]?.v, en: row.c[2]?.v, cn: row.c[3]?.v },
+          img: row.c[4]?.v,
+          lat: lat,
+          lng: lng
+        };
+      });
 
       displaySpots(spots, 1);
       displaySpots(spots, 2);
 
-      // 言語切替イベント
       const langButtons = document.querySelectorAll('#language-switcher button');
       langButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          currentLang = btn.dataset.lang; // ja, en, cn
-          // 固定文言を切替
-          document.querySelectorAll('.lang-ja, .lang-en, .lang-cn').forEach(el => {
-            el.style.display = 'none';
-          });
-          document.querySelectorAll(`.lang-${currentLang}`).forEach(el => {
-            el.style.display = '';
-          });
-          // スポット名の言語更新
+          currentLang = btn.dataset.lang;
+          document.querySelectorAll('.lang-ja, .lang-en, .lang-cn').forEach(el => el.style.display = 'none');
+          document.querySelectorAll(`.lang-${currentLang}`).forEach(el => el.style.display = '');
           updateSpotNames(spots);
         });
       });
     });
 
-  // スポットを表示
   function displaySpots(spots, step) {
     spots.forEach((spot, i) => {
       const containerId = `step${step}-cat-${spot.genre}`;
@@ -49,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const div = document.createElement('div');
       div.className = 'spot-item';
-      div.dataset.index = i; // ← どのスポットか記録
+      div.dataset.index = i;
       div.style.cursor = 'pointer';
       div.style.display = 'inline-block';
       div.style.margin = '5px';
@@ -65,39 +62,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 言語切替時にスポット名を更新
   function updateSpotNames(spots) {
     document.querySelectorAll('.spot-item').forEach(div => {
       const index = div.dataset.index;
       if (index === undefined) return;
       const spot = spots[index];
       const p = div.querySelector('.spot-name');
-      if (p && spot) {
-        p.textContent = spot.name[currentLang] || spot.name.ja;
-      }
+      if (p && spot) p.textContent = spot.name[currentLang] || spot.name.ja;
     });
   }
 
-  // スポット選択処理
   function selectSpot(spot, step, div) {
+    const spotWithLatLng = {
+      ...spot,
+      lat: spot.lat,
+      lng: spot.lng
+    };
+
     if (step === 1) {
-      localStorage.setItem('step1Spot', JSON.stringify(spot));
+      localStorage.setItem('step1Spot', JSON.stringify(spotWithLatLng));
       highlightSelected('step1', div);
     } else {
-      localStorage.setItem('step2Spot', JSON.stringify(spot));
+      localStorage.setItem('step2Spot', JSON.stringify(spotWithLatLng));
       highlightSelected('step2', div);
     }
   }
 
-// スポット選択処理（クラス付け替え方式）
-function highlightSelected(step, selectedDiv) {
-  document.querySelectorAll(`#${step} .spot-item`).forEach(div => {
-    div.classList.remove('selected'); // まず全て外す
-  });
-  selectedDiv.classList.add('selected'); // 選択した要素に追加
-}
+  function highlightSelected(step, selectedDiv) {
+    document.querySelectorAll(`#${step} .spot-item`).forEach(div => div.classList.remove('selected'));
+    selectedDiv.classList.add('selected');
+  }
 
-  // 次のページへ
   const nextBtn = document.getElementById('next-step');
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
